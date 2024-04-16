@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "150835095261",
+    "project_id": "compose-chatapp-32820",
+    "storage_bucket": "compose-chatapp-32820.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150835095261:android:ec6cdb2bbb57399b69dd34",
+        "android_client_info": {
+          "package_name": "com.example.compose_chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWdtSA4P8lNR_JcpFgNqsqfPP1bTMGS1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

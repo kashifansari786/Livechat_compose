@@ -17,7 +17,9 @@ import com.example.compose_chatapp.screens.LoginScreen
 import com.example.compose_chatapp.ui.theme.Compose_chatAppTheme
 import androidx.navigation.compose.composable
 import com.example.compose_chatapp.screens.ChatListScreen
+import com.example.compose_chatapp.screens.ProfileScreen
 import com.example.compose_chatapp.screens.SignupScreen
+import com.example.compose_chatapp.screens.StatusScreen
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,7 +68,13 @@ class MainActivity : ComponentActivity() {
                 LoginScreen(navController,viewModel)
             }
             composable(DestinationScreen.ChatListScreen.route){
-                ChatListScreen(navController)
+                ChatListScreen(navController,viewModel)
+            }
+            composable(DestinationScreen.StatusListScreen.route){
+                StatusScreen(navController,viewModel)
+            }
+            composable(DestinationScreen.ProfileScreen.route){
+                ProfileScreen(navController,viewModel)
             }
         }
 

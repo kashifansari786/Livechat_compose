@@ -1,29 +1,36 @@
 package com.example.compose_chatapp
 
+import android.net.Uri
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.compose_chatapp.constants.USER_NODE
+import com.example.compose_chatapp.data.ChatData
 import com.example.compose_chatapp.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
+import java.util.UUID
 import javax.inject.Inject
 
 /**
  * Created by Mohammad Kashif Ansari on 15,April,2024
  */
 @HiltViewModel
-class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:FirebaseFirestore): ViewModel() {
+class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:FirebaseFirestore,val storage:FirebaseStorage): ViewModel() {
 
 
 
     var inProgress= mutableStateOf(false)
+    val inProgressChat= mutableStateOf(false)
     var eventMutableState= mutableStateOf<Event<String>?>(null)
     var signIn= mutableStateOf(false)
     var userData= mutableStateOf<UserData?>(null)
+    val chats= mutableStateOf<List<ChatData>>(listOf())
 
 
     init {
@@ -58,6 +65,9 @@ class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:F
 
     }
 
+    fun onAddChat(it:String){
+
+    }
     fun Login(email:String,password:String){
         if(email.isEmpty() or password.isEmpty()){
             handleException(customException = "Please fill all the fields")
@@ -77,7 +87,15 @@ class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:F
 
     }
 
-    private fun createOrUpdateProfile(name: String?=null, number: String?=null,imageUrl:String?=null) {
+    fun logout(){
+        auth.signOut()
+        signIn.value=false
+        userData.value=null
+        eventMutableState.value=Event("Logout")
+
+    }
+
+    fun createOrUpdateProfile(name: String?=null, number: String?=null,imageUrl:String?=null) {
         var uId=auth.currentUser?.uid
         val userData=UserData(
             uId,name?:userData.value?.name,number?:userData.value?.number,imageUrl?:userData.value?.imageUrl
@@ -87,6 +105,9 @@ class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:F
             dataBase.collection(USER_NODE).document(uId).get().addOnSuccessListener {
                 if(it.exists()){
                     //update user data
+                    dataBase.collection(USER_NODE).document(uId).set(userData)
+                    inProgress.value=false
+                    getUserData(uId)
                 }else
                 {
                     dataBase.collection(USER_NODE).document(uId).set(userData)
@@ -109,6 +130,7 @@ class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:F
             }
             if(value!=null){
                 var user=value.toObject<UserData>()
+
                 userData.value=user
                 inProgress.value=false
             }
@@ -122,5 +144,27 @@ class LiveChatViewModel @Inject constructor(val auth:FirebaseAuth,val dataBase:F
         eventMutableState.value= Event(message)
         inProgress.value=false
     }
+    fun uploadProfileImage(uri:Uri,userId:String){
+        uploadImage(uri,userId){
+            userData.value?.imageUrl=uri.toString()
+            createOrUpdateProfile(imageUrl = it.toString())
+        }
+    }
+    fun uploadImage(uri: Uri,userId:String,onSuccess:(Uri)->Unit){
+        inProgress.value=true
+        val storageRef=storage.reference
+        val randomUuId=UUID.randomUUID()
+        val imageRef=storageRef.child("images/{$userId}")
+        val uploadTask=imageRef.putFile(uri).addOnSuccessListener {
+            val result=it.metadata?.reference?.downloadUrl
+
+            result?.addOnSuccessListener(onSuccess)
+            inProgress.value=false
+        }.addOnFailureListener{
+            handleException(it)
+        }
+    }
 }
+
+
 

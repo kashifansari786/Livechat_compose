@@ -5,3 +5,6 @@ package com.example.compose_chatapp.constants
  */
 
 const val USER_NODE="user"
+const val CHATS="chats"
+const val MESSAGES="messages"
+const val STATUS="status"

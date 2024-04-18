@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,9 @@ import com.example.compose_chatapp.DestinationScreen
 import com.example.compose_chatapp.LiveChatViewModel
 import com.example.compose_chatapp.TitleText
 import com.example.compose_chatapp.commonProgressBar
+import androidx.compose.foundation.lazy.items
+import com.example.compose_chatapp.commonRow
+import com.example.compose_chatapp.navigateTo
 
 /**
  * Created by Mohammad Kashif Ansari on 16,April,2024
@@ -83,6 +87,22 @@ fun ChatListScreen(navController: NavController,viewModel: LiveChatViewModel){
                         .fillMaxWidth()
                         .weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                         Text(text = "No Chat Available")
+                    }
+                }else{
+                    LazyColumn(modifier = Modifier.weight(1f)) {
+                        items(chats){
+                            chat->
+                            val chatUser=if(chat.user1.userId==userData?.userId){
+                                chat.user2
+                            }else
+                                chat.user1
+                            commonRow(imageUrl = chatUser.imageUrl, name = chatUser.name) {
+                                chat.chatId?.let{
+                                    navigateTo(navController, route = DestinationScreen.SingleChatScreen.createRoute(it))
+                                }
+
+                            }
+                        }
                     }
                 }
                 BottomNavigationMenu(selectedItem = BottomNavigationItems.CHATLIST, navController = navController)

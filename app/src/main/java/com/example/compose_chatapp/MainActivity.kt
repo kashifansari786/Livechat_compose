@@ -19,6 +19,8 @@ import androidx.navigation.compose.composable
 import com.example.compose_chatapp.screens.ChatListScreen
 import com.example.compose_chatapp.screens.ProfileScreen
 import com.example.compose_chatapp.screens.SignupScreen
+import com.example.compose_chatapp.screens.SingleChatScreen
+import com.example.compose_chatapp.screens.SingleStatusScreen
 import com.example.compose_chatapp.screens.StatusScreen
 import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,8 +72,19 @@ class MainActivity : ComponentActivity() {
             composable(DestinationScreen.ChatListScreen.route){
                 ChatListScreen(navController,viewModel)
             }
+            composable(DestinationScreen.SingleChatScreen.route){
+                val chatId=it.arguments?.getString("chatId")
+                chatId?.let {
+                    SingleChatScreen(navController,viewModel,it)
+                }
+
+            }
             composable(DestinationScreen.StatusListScreen.route){
                 StatusScreen(navController,viewModel)
+            }
+            composable(DestinationScreen.SingleStatusScreen.route){
+                val userId=it.arguments?.getString("userId")
+                userId?.let { it1 -> SingleStatusScreen(navController,viewModel, it1) }
             }
             composable(DestinationScreen.ProfileScreen.route){
                 ProfileScreen(navController,viewModel)
